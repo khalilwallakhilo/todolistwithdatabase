@@ -34,7 +34,7 @@ namespace todolistwithdatabase.Controllers
 
         [HttpPost("login")]
 
-        public ActionResult<string> Login(UserDTO request)
+        public ActionResult<User> Login(UserDTO request)
         {
             if (user.Username != request.Username)
             {
@@ -53,7 +53,9 @@ namespace todolistwithdatabase.Controllers
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, "Admin"),
+                new Claim(ClaimTypes.Role, "User")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(

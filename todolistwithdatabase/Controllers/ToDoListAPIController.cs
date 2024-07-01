@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Google.Apis.Admin.Directory.directory_v1.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace TDL_TDLAPI.Controllers
 
     [Route("api/ToDoListAPI")]
     [ApiController]
+    [Authorize]
     //I am authorizing all the endpoints in this controller 
     public class ToDoListAPIController : ControllerBase
     {
@@ -22,7 +24,7 @@ namespace TDL_TDLAPI.Controllers
 
         }
 
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

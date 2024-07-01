@@ -21,20 +21,20 @@ namespace todolistwithdatabase.Middleware
                 _logger.LogError(e, e.Message);
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            ProblemDetails problem = new()
-            {
-                Status = (int)HttpStatusCode.InternalServerError,
-                Type = "Server Error",
-                Title = "Server Error",
+                ProblemDetails problem = new()
+                {
+                    Status = (int)HttpStatusCode.InternalServerError,
+                    Type = "Server Error",
+                    Title = "Server Error",
                     Detail = "An internal server has occured"
                 };
 
                 string json = JsonSerializer.Serialize(problem);
 
-            await context.Response.WriteAsync(json);
+                await context.Response.WriteAsync(json);
 
-            context.Response.ContentType = "application/json";
+                context.Response.ContentType = "application/json";
+            }
         }
     }
-}
 }
