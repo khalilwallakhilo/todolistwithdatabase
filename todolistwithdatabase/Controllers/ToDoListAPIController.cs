@@ -12,36 +12,59 @@ namespace TDL_TDLAPI.Controllers
 
     [Route("api/ToDoListAPI")]
     [ApiController]
-     //I am authorizing all the endpoints in this controller 
+    //I am authorizing all the endpoints in this controller 
     public class ToDoListAPIController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
         public ToDoListAPIController(ApplicationDbContext db)
         {
             _db = db;
-            
+
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-         //Getting to do lists could be done anonymously 
-        public ActionResult<IEnumerable<ToDoList>> GetToDoLists(int page = 1, int pageSize = 10)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        //Getting to do lists could be done anonymously 
+        public ActionResult<IEnumerable<ToDoList>> GetToDoLists(int page = 1, int pageSize = 10, string search = null)
         {
-            var totalCount = _db.Lists.Count();
-            var totalPages = (int) Math.Ceiling((decimal)totalCount / pageSize);
-            var tasksperpage = _db.Lists
-                .Skip((page - 1)*pageSize)
-                .Take(pageSize)
-                .ToList();
+            if (page <= 0 || pageSize <= 0)
+            {
+                ModelState.AddModelError("ERROR - ", "Page/Page Size is invalid.");
+                return NotFound(ModelState);
+            }
+            else
+            {
+                var query = _db.Lists.AsQueryable();
+                if (!string.IsNullOrEmpty(search))
+                {
+                    query = query.Where(list => list.Title.Contains(search) || list.Description.Contains(search));
+                }
 
-            return tasksperpage;
+                var totalCount = query.Count();
+                var totalPages = (int)Math.Ceiling((decimal)totalCount / pageSize);
+
+                var tasksperpage = query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                return Ok(new
+                {
+                    TotalCount = totalCount,
+                    TotalPages = totalPages,
+                    TasksPerPage = tasksperpage
+                });
+            }
         }
-        [HttpGet("{title?}")]
+
+        [HttpGet("{isCompleted?}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public ActionResult<ToDoListDTO> GetToDoList(int id, string title = null, bool? isCompleted =null)
+        public ActionResult<ToDoListDTO> GetToDoList(string title = null, bool? isCompleted =null)
         {
 
             IQueryable<ToDoList> query = _db.Lists;

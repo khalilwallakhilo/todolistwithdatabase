@@ -14,6 +14,11 @@ using todolistwithdatabase.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddLogging();
+
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
 byte[] secretBytes = new byte[64];
 using(var random = RandomNumberGenerator.Create())
 {
@@ -31,19 +36,19 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) //Bearer Tokens used for authentication 
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = "Free Trained",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-    };
-});
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) //Bearer Tokens used for authentication 
+//.AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = "Free Trained",
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+//    };
+//});
 
 builder.Services.AddAuthorization();
 //builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
