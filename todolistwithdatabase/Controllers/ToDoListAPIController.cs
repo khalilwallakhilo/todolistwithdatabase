@@ -13,7 +13,7 @@ namespace TDL_TDLAPI.Controllers
 
     [Route("api/ToDoListAPI")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "AdminOnly")]
     //I am authorizing all the endpoints in this controller 
     public class ToDoListAPIController : ControllerBase
     {
@@ -61,7 +61,7 @@ namespace TDL_TDLAPI.Controllers
             }
         }
 
-        [HttpGet("{isCompleted?}")]
+        [HttpGet("{isCompleted?}"), AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

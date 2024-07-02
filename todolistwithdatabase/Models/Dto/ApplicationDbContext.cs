@@ -7,6 +7,7 @@ namespace todolistwithdatabase.Models.Dto
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public DbSet<ToDoList> Lists { get; set; }
+        public DbSet<User> Users { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ToDoList>().HasData(
@@ -19,6 +20,14 @@ namespace todolistwithdatabase.Models.Dto
                     DueDate = "2024-10-5"
                 }
                 );
+            modelBuilder.Entity<User>().HasData(
+                new User()
+                {
+                    Username = "Test",
+                    PasswordHash = "test",
+                    Role = "Admin"
+
+                });
 
 
             

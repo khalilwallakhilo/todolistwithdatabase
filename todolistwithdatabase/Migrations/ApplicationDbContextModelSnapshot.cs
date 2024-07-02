@@ -47,6 +47,43 @@ namespace todolistwithdatabase.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Lists");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "hah",
+                            DueDate = "2024-10-5",
+                            IsCompleted = false,
+                            Title = "Lorem Epsum"
+                        });
+                });
+
+            modelBuilder.Entity("todolistwithdatabase.Models.User", b =>
+                {
+                    b.Property<string>("Username")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Username");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Username = "Test",
+                            PasswordHash = "test",
+                            Role = "admin"
+                        });
                 });
 #pragma warning restore 612, 618
         }

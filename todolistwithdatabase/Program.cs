@@ -11,6 +11,7 @@ using todolistwithdatabase.Middleware;
 using todolistwithdatabase.Models.Dto;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddControllers(options =>
 .AddNewtonsoftJson()
 .AddXmlDataContractSerializerFormatters()
 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ToDoListValidator>());
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -65,6 +67,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireClaim(ClaimTypes.Role, "Admin"));
 });
 
 var app = builder.Build();

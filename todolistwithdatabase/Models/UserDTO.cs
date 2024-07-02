@@ -1,8 +1,14 @@
-﻿namespace todolistwithdatabase.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace todolistwithdatabase.Models
 {
     public class UserDTO
     {
-        public required string Username { get; set; }
-        public required string Password { get; set; }
+        
+        public string Username { get; set; }
+        
+        public string Password { get; set; }
+       
+        public string Role { get; set; }
     }
 }

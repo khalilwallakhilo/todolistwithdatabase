@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using todolistwithdatabase.Models;
+using todolistwithdatabase.Models.Dto;
 
 namespace todolistwithdatabase.Controllers
 {
@@ -13,30 +14,38 @@ namespace todolistwithdatabase.Controllers
     {
         public static User user = new User();
         private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext _context;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, ApplicationDbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpPost("register")]
-
         public ActionResult<User> Register(UserDTO request)
         {
-            string passwordhash
-                = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
+            if (_context.Users.FirstOrDefault(u => u.Username.ToLower() == request.Username.ToLower()) != null)
+            {
+                ModelState.AddModelError("ERROR - ", "This username is taken.");
+                return BadRequest(ModelState);
+            }
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             user.Username = request.Username;
-            user.PasswordHash = passwordhash;
+            user.PasswordHash = passwordHash;
+            user.Role = request.Role;
+            _context.Users.Add(user);
+            _context.SaveChanges();
 
             return Ok(user);
         }
 
         [HttpPost("login")]
-
         public ActionResult<User> Login(UserDTO request)
         {
-            if (user.Username != request.Username)
+            var user = _context.Users.SingleOrDefault(u => u.Username == request.Username);
+
+            if (user == null)
             {
                 return BadRequest("User not found");
             }
@@ -49,13 +58,13 @@ namespace todolistwithdatabase.Controllers
 
             return Ok(token);
         }
+
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, "Admin"),
-                new Claim(ClaimTypes.Role, "User")
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
@@ -73,6 +82,5 @@ namespace todolistwithdatabase.Controllers
 
             return jwt;
         }
-
     }
 }
